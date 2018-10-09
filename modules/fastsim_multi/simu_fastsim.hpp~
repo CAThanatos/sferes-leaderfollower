@@ -1,0 +1,71 @@
+#ifndef SIMU_FASTSIM_MULTI_HPP_
+#define SIMU_FASTSIM_MULTI_HPP_
+
+#include <sferes/simu/simu.hpp>
+#include "fastsim_multi.hpp"
+
+namespace sferes
+{
+  namespace simu
+  {
+    SFERES_SIMU(FastsimMulti, Simu)
+    {
+      public:
+        FastsimMulti() :
+        {
+          _map = boost::shared_ptr<fastsim::Map>(new fastsim::Map(Params::simu::map_name(), 600.0f));
+        }
+        FastsimMulti(const fastsim::Map & m) :
+        {
+          _map = boost::shared_ptr<fastsim::Map>(new fastsim::Map(m));
+        }
+        ~Fastsim(){}
+        void init()
+        {}
+        void refresh() 
+        {
+        	for(std::vector<fastsim::Robot>::iterator it = _robots.begin(); it != _robots.end(); ++it) {
+         		_map->update(it.get_pos()); 
+          }
+        }
+        void init_view(bool dump = false)
+        {
+          _display =
+            boost::shared_ptr<fastsim::Display>(new fastsim::Display(_map, _robots));
+        }
+        void set_map(const boost::shared_ptr<fastsim::Map>& map) { _map = map; }
+        void refresh_view()
+        {
+          _display->update();
+        }
+        void refresh_map_view()
+        {
+          _display->update_map();
+        }
+        void switch_map()
+        {
+          _map->terrain_switch(Params::simu::alt_map_name());
+        }
+        void reset_map()
+        {
+          _map->terrain_switch(Params::simu::map_name());
+        }
+        void move_robot(float v1, float v2, const fastsim::Robot &robot) { robot.move(v1, v2, _map); }
+
+        boost::shared_ptr<fastsim::Map> map() { return _map; }
+        const boost::shared_ptr<fastsim::Map> map() const { return _map; }
+
+        vector<fastsim::Robot>& robots() { return _robots; }
+        const vector<fastsim::Robot>& robots() const { return _robots; }
+
+        fastsim::Display& display() {return *_display; }
+      protected:
+        std::vector<fastsim::Robot> _robots;
+        boost::shared_ptr<fastsim::Map> _map;
+        boost::shared_ptr<fastsim::Display> _display;
+
+    };
+  }
+}
+
+#endif
