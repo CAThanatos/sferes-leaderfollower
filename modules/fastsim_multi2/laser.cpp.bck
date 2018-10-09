@@ -1,0 +1,40 @@
+/*
+** laser.cc
+** Login : <mandor@ithaqua>
+** Started on  Wed Jun  3 00:41:29 2009 mandor
+** $Id$
+** 
+** Copyright (C) 2009 mandor
+** This program is free software; you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation; either version 2 of the License, or
+** (at your option) any later version.
+** 
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+** 
+** You should have received a copy of the GNU General Public License
+** along with this program; if not, write to the Free Software
+** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+*/
+
+#include <iostream>
+#include "laser.hpp"
+
+namespace fastsim
+{
+  float Laser :: update(const Posture& pos,
+			const boost::shared_ptr<Map>& m)
+  {
+    Map::Return_check_t ret = m->check_inter_angle(pos.x(), pos.y(), normalize_angle(_angle + pos.theta()), _range);
+
+    if(ret.pixel == -1)
+        _dist = -1;
+    else
+        _dist = ret.dist; 
+
+    return _dist;
+  }  
+}
